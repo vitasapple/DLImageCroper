@@ -11,7 +11,7 @@
 #import "DLImageCroper.h"
 #import "DLCropImageView.h"
 #import "UIImage+DLExtension.h"
-
+#import "NSString+DLExtension.h"
 static inline UIWindow * DLGetWindow(){
     UIWindow *window = nil;
     if (@available(iOS 13.0, *)) {

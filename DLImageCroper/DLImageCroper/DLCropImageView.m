@@ -28,8 +28,12 @@
         self.shouldChoseImageBlock();
     }
 }
+- (void)setRatioArr:(NSArray<DLImageItemRatioModel *> *)ratioArr{
+    _ratioArr = ratioArr;
+}
 -(void)sendChoseImage:(UIImage * )image{
     DLImageCroper * crop = [[DLImageCroper alloc]initWithFrame:CGRectMake(0, 0, DL_SCREEN_WIDTH, DL_SCREEN_HEIGHT) img:image];
+    crop.ratioArr = self.ratioArr;
     crop.getCropImgBlock = ^(UIImage * _Nonnull cropImg, CGRect r) {
         UIImageView * tmpView = [[UIImageView alloc]initWithFrame:r];
         tmpView.image = cropImg;
@@ -51,7 +55,7 @@
         }];
     };
     [[self currentViewController].view addSubview:crop];
-    
+    [crop show];
     if (self.shouldShowDelBtn) {
         [self addSubview:self.delBtn];
     }

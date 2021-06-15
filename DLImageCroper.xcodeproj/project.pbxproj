@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		18CA405D26787E1200BAEFCB /* NSString+DLExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 18CA405C26787E1200BAEFCB /* NSString+DLExtension.m */; };
+		18CA40612678806F00BAEFCB /* DLImageItemRatioModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 18CA40602678806F00BAEFCB /* DLImageItemRatioModel.m */; };
 		18FA3B292670A20A00403881 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 18FA3B282670A20A00403881 /* AppDelegate.m */; };
 		18FA3B2F2670A20A00403881 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18FA3B2E2670A20A00403881 /* ViewController.m */; };
 		18FA3B322670A20A00403881 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18FA3B302670A20A00403881 /* Main.storyboard */; };
@@ -21,6 +23,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		18CA405B26787E1200BAEFCB /* NSString+DLExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+DLExtension.h"; sourceTree = "<group>"; };
+		18CA405C26787E1200BAEFCB /* NSString+DLExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+DLExtension.m"; sourceTree = "<group>"; };
+		18CA405F2678806F00BAEFCB /* DLImageItemRatioModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DLImageItemRatioModel.h; sourceTree = "<group>"; };
+		18CA40602678806F00BAEFCB /* DLImageItemRatioModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DLImageItemRatioModel.m; sourceTree = "<group>"; };
 		18FA3B242670A20A00403881 /* DLImageCroper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DLImageCroper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18FA3B272670A20A00403881 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		18FA3B282670A20A00403881 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -54,6 +60,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		18CA40632678809600BAEFCB /* category */ = {
+			isa = PBXGroup;
+			children = (
+				18FA3B5A2670BC5000403881 /* UIImage+DLExtension.h */,
+				18FA3B5B2670BC5000403881 /* UIImage+DLExtension.m */,
+				18CA405B26787E1200BAEFCB /* NSString+DLExtension.h */,
+				18CA405C26787E1200BAEFCB /* NSString+DLExtension.m */,
+			);
+			path = category;
+			sourceTree = "<group>";
+		};
+		18CA40642678809F00BAEFCB /* model */ = {
+			isa = PBXGroup;
+			children = (
+				18CA405F2678806F00BAEFCB /* DLImageItemRatioModel.h */,
+				18CA40602678806F00BAEFCB /* DLImageItemRatioModel.m */,
+			);
+			path = model;
+			sourceTree = "<group>";
+		};
 		18FA3B1B2670A20A00403881 = {
 			isa = PBXGroup;
 			children = (
@@ -103,8 +129,8 @@
 				18FA3B4B2670A33200403881 /* DLCropImageView.m */,
 				18FA3B452670A2A500403881 /* DLImageCroper.h */,
 				18FA3B462670A2A500403881 /* DLImageCroper.m */,
-				18FA3B5A2670BC5000403881 /* UIImage+DLExtension.h */,
-				18FA3B5B2670BC5000403881 /* UIImage+DLExtension.m */,
+				18CA40642678809F00BAEFCB /* model */,
+				18CA40632678809600BAEFCB /* category */,
 				18FA3B4E2670A38B00403881 /* third */,
 				18FA3B572670B5A500403881 /* DLImageCroper.bundle */,
 			);
@@ -191,6 +217,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				18FA3B4C2670A33200403881 /* DLCropImageView.m in Sources */,
+				18CA40612678806F00BAEFCB /* DLImageItemRatioModel.m in Sources */,
+				18CA405D26787E1200BAEFCB /* NSString+DLExtension.m in Sources */,
 				18FA3B472670A2A500403881 /* DLImageCroper.m in Sources */,
 				18FA3B512670A39900403881 /* ISVImageScrollView.m in Sources */,
 				18FA3B2F2670A20A00403881 /* ViewController.m in Sources */,

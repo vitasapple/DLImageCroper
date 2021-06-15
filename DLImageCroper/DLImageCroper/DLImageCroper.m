@@ -8,6 +8,7 @@
 #import "DLImageCroper.h"
 #import "ISVImageScrollView.h"
 #import "DLImageCroperHeader.h"
+#import "DLImageItemRatioModel.h"
 #define barHeight 50
 
 @interface DLImageCroper()<UIScrollViewDelegate>
@@ -18,6 +19,7 @@
 @property(nonatomic,assign)CGRect currentRect;
 @property(nonatomic,assign)CGPoint offset;
 @property(nonatomic,retain)UIImage * currentImg;
+@property(nonatomic,retain)UIScrollView * itemScrollView;
 @end
 @implementation DLImageCroper
 
@@ -31,11 +33,30 @@
         self.backgroundColor = [UIColor whiteColor];
         self.currentImg = img;
         self.originRate = img.size.width/img.size.height;
-        [self createUI:img];
     }
     return self;
 }
-
+-(void)show{
+    if (!_ratioArr) {
+        [self setupRationArr];
+    }
+    [self createUI:self.currentImg];
+}
+-(void)setupRationArr{
+    NSArray * nameArr = @[@"1:1",@"3:4",@"原始比例",@"3:2",@"16:9"];
+    NSArray * valArr = @[@1,@0.75, @0,@1.5, @1.778];
+    NSMutableArray * arr = [NSMutableArray new];
+    for (int i =0; i<nameArr.count ; i++) {
+        DLImageItemRatioModel * mo = [[DLImageItemRatioModel alloc]init];
+        mo.name = nameArr[i];
+        mo.ratio = [valArr[i] doubleValue];
+        [arr addObject:mo];
+    }
+    self.ratioArr = arr.copy;
+}
+- (void)setRatioArr:(NSArray<DLImageItemRatioModel *> *)ratioArr{
+    _ratioArr = ratioArr;
+}
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
     
     return _contentImgV;
@@ -109,23 +130,38 @@
     [certainBtn addTarget:self action:@selector(certainBtnClick) forControlEvents:UIControlEventTouchUpInside];
     certainBtn.frame = CGRectMake(DL_SCREEN_WIDTH -45, kStatusBarHeight, 45, 45);
     [topView addSubview:certainBtn];
-    UIView * botView = [[UIView alloc]initWithFrame:CGRectMake(0, DL_SCREEN_HEIGHT - KTabbarSafeBottomMargin - barHeight, DL_SCREEN_WIDTH, DL_SCREEN_HEIGHT)];
-    botView.backgroundColor = [UIColor whiteColor];
-    [self addSubview:botView];
-    NSArray * nameArr = @[@"1:1",@"3:4",@"原始比例",@"3:2",@"16:9"];
-    CGFloat btnw = DL_SCREEN_WIDTH / nameArr.count;
-    for (int i =0; i<nameArr.count; i++) {
-        UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [btn setTitle:nameArr[i] forState:UIControlStateNormal];
-        [btn setTitleColor:TextColor forState:UIControlStateNormal];
-        btn.titleLabel.font = [UIFont systemFontOfSize:AUTO(15)];
-        [btn addTarget:self action:@selector(choseRateClick:) forControlEvents:UIControlEventTouchUpInside];
-        btn.tag = 10 + i;
-        btn.frame = CGRectMake(btnw * i, 0, btnw, barHeight);
-        [botView addSubview:btn];
+    self.itemScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, DL_SCREEN_HEIGHT - KTabbarSafeBottomMargin - barHeight, DL_SCREEN_WIDTH, KTabbarSafeBottomMargin + barHeight)];
+    self.itemScrollView.backgroundColor = [UIColor whiteColor];
+    [self addSubview:self.itemScrollView];
+    
+    NSMutableArray * widArr = [NSMutableArray new];
+    CGFloat btnw = DL_SCREEN_WIDTH/self.ratioArr.count;
+    for (DLImageItemRatioModel * mo  in self.ratioArr) {
+        CGFloat nameWid = [mo.name sizeWithFont:[UIFont systemFontOfSize:AUTO(15)] maxSize:CGSizeMake(DL_SCREEN_WIDTH, 20)].width;
+        if (nameWid > btnw) {
+            [widArr addObject:@(nameWid)];
+        }else{
+            [widArr addObject:@(btnw)];
+        }
     }
+    UIButton * lastBtn = nil;
+    for (int i =0; i<self.ratioArr.count; i++) {
+        DLImageItemRatioModel * mo = self.ratioArr[i];
+        CGFloat wid = floor([widArr[i] doubleValue]);
+        UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [btn setTitle:mo.name forState:UIControlStateNormal];
+        [btn addTarget:self action:@selector(choseRateClick:) forControlEvents:UIControlEventTouchUpInside];
+        btn.titleLabel.font = [UIFont systemFontOfSize:AUTO(15)];
+        [btn setTitleColor:TextColor forState:UIControlStateNormal];
+        btn.tag = 10 + i;
+        btn.frame = CGRectMake( CGRectGetMaxX(lastBtn.frame) , 0, wid, barHeight);
         
-    CGRect odd = CGRectMake(0, kTopHeight/2.0 + (CGRectGetMinY(botView.frame) - DL_SCREEN_WIDTH )/2.0, DL_SCREEN_WIDTH, DL_SCREEN_WIDTH);
+        [self.itemScrollView addSubview:btn];
+        lastBtn = btn;
+    }
+    self.itemScrollView.contentSize = CGSizeMake(CGRectGetMaxX(lastBtn.frame), CGRectGetHeight(self.itemScrollView.frame));
+        
+    CGRect odd = CGRectMake(0, kTopHeight/2.0 + (CGRectGetMinY(self.itemScrollView.frame) - DL_SCREEN_WIDTH )/2.0, DL_SCREEN_WIDTH, DL_SCREEN_WIDTH);
     self.currentRect = odd;
     self.bgScro = [[ISVImageScrollView alloc]initWithFrame:odd];
     self.bgScro.maximumZoomScale = 4.0;
@@ -137,7 +173,7 @@
     self.bgScro.imageView = _contentImgV;
     [self calculateStartXYMargin:1];
     
-    CGRect ff = CGRectMake(0, kTopHeight, DL_SCREEN_WIDTH, CGRectGetMinY(botView.frame)-kTopHeight);
+    CGRect ff = CGRectMake(0, kTopHeight, DL_SCREEN_WIDTH, CGRectGetMinY(self.itemScrollView.frame)-kTopHeight);
     UIBezierPath * path = [UIBezierPath bezierPathWithRect:ff];
     UIBezierPath * path2 = [UIBezierPath bezierPathWithRect:odd];
     [path appendPath:path2];
@@ -164,26 +200,19 @@
     UIBezierPath * path2 = nil;
     CGRect fp = CGRectZero;
     CGFloat ratio = 0;
-    if (sender.tag == 10) {
-        ratio = 1;
-        fp = CGRectMake(0, (minY - DL_SCREEN_WIDTH)/2.0 + kTopHeight, DL_SCREEN_WIDTH, DL_SCREEN_WIDTH);
-    }else if(sender.tag == 11){
-        ratio = 3/4.0;
-        CGFloat hei = DL_SCREEN_WIDTH * 4/3.0;
-        fp = CGRectMake(0, (minY - hei)/2.0 + kTopHeight, DL_SCREEN_WIDTH, hei);
-    }else if(sender.tag == 12){
+    DLImageItemRatioModel * mo = self.ratioArr[sender.tag - 10];
+    if (mo.ratio == 0) {
         ratio = (self.currentImg.size.width/self.currentImg.size.height);
         CGFloat hei = DL_SCREEN_WIDTH /self.originRate < minY ? DL_SCREEN_WIDTH /self.originRate:minY;
         CGFloat y = (minY - hei)/2.0;
         fp = CGRectMake(0, y + kTopHeight, DL_SCREEN_WIDTH, hei);
-    }else if(sender.tag == 13){
-        ratio = 3/2.0;
-        CGFloat hei = DL_SCREEN_WIDTH * 2/3.0;
-        fp = CGRectMake(0, (minY - hei)/2.0 + kTopHeight, DL_SCREEN_WIDTH, hei);
     }else{
-        ratio = 16/9.0;
-        CGFloat hei = DL_SCREEN_WIDTH * 9/16.0;
+        ratio = mo.ratio;
+        CGFloat hei = DL_SCREEN_WIDTH / mo.ratio;
         fp = CGRectMake(0, (minY - hei)/2.0 + kTopHeight, DL_SCREEN_WIDTH, hei);
+    }
+    if (CGRectGetHeight(fp) > minY) {
+        fp = CGRectMake(0, kTopHeight, DL_SCREEN_WIDTH, minY);
     }
     self.canvasHeight = fp.size.height;
     self.bgScro.frame = fp;
