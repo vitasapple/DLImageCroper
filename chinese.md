@@ -4,7 +4,7 @@ DLImageCroper 提供一个简单的截取当前图片的简单方案，默认内
 
 默认提供了DLCropImageView用于显示，只需要如下代码即可，如果你不需要内置的DLCropImageView，你也可以参照DLCropImageView自己实现相关方法。
 
-![矩形](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4fb889a7c67a42cf97f85a254d06040d~tplv-k3u1fbpfcp-watermark.image)
+[GitHub展示外链失败，请点击查看gif](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4fb889a7c67a42cf97f85a254d06040d~tplv-k3u1fbpfcp-watermark.image)
 
 用法
 
@@ -49,7 +49,7 @@ self.cropView.shouldShowDelBtn = YES;
 [self.view addSubview:self.cropView];
 ```
 
-![圆形](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7dd8ebceb6244411b5102357cb050dfc~tplv-k3u1fbpfcp-watermark.image)
+[GitHub展示外链失败，请点击查看gif](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7dd8ebceb6244411b5102357cb050dfc~tplv-k3u1fbpfcp-watermark.image)
 
 支持圆形裁剪，只需加入一行代码
 

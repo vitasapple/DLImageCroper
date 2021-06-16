@@ -8,7 +8,7 @@ DLImageCroper provides a simple solution for capturing the current image, with f
 
 DLCropImageView is provided by default for display, you just need the following code. If you don't need the built-in DLCropImageView, you can also refer to DLCropImageView to implement the related methods by yourself.
 
-![矩形](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4fb889a7c67a42cf97f85a254d06040d~tplv-k3u1fbpfcp-watermark.image)
+[click to see gif](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4fb889a7c67a42cf97f85a254d06040d~tplv-k3u1fbpfcp-watermark.image)
 
 Usage
 
@@ -53,7 +53,7 @@ self.cropView.shouldShowDelBtn = YES;
 [self.view addSubview:self.cropView];
 ```
 
-![圆形](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7dd8ebceb6244411b5102357cb050dfc~tplv-k3u1fbpfcp-watermark.image)
+[click to see gif](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7dd8ebceb6244411b5102357cb050dfc~tplv-k3u1fbpfcp-watermark.image)
 
 Support circular cropping, just add one line of code
 
