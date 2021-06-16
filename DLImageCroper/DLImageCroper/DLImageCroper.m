@@ -103,7 +103,7 @@
         }
     }
     CGFloat realRate = self.scale / rate;//再根据屏幕的缩放倍率换算成相对图片的真正的缩放倍率
-    CGRect  imgRect = CGRectMake(fabs(self.offset.x)/realRate,fabs(self.offset.y - self.startYMargin)/realRate, CGRectGetWidth(self.currentRect)/realRate, CGRectGetHeight(self.currentRect)/realRate);
+    CGRect  imgRect = CGRectMake(fabs(self.offset.x)/realRate,fabs(self.offset.y)/realRate, CGRectGetWidth(self.currentRect)/realRate, CGRectGetHeight(self.currentRect)/realRate);
     CGImageRef imageRef = CGImageCreateWithImageInRect([self.contentImgV.image CGImage],imgRect );
     UIImage * finalImg = [UIImage imageWithCGImage: imageRef];
     CGImageRelease(imageRef);
@@ -181,6 +181,7 @@
     }else{
         odd = CGRectMake(0, (itemScrollViewMinY - hei)/2.0 + kTopHeight, DL_SCREEN_WIDTH, hei);
     }
+    self.canvasHeight = odd.size.height;
     self.currentRect = odd;
     self.bgScro = [[ISVImageScrollView alloc]initWithFrame:odd];
     self.bgScro.maximumZoomScale = 4.0;
@@ -190,7 +191,7 @@
     _contentImgV.image = [img normalizedImage];
     [self.bgScro addSubview:_contentImgV];
     self.bgScro.imageView = _contentImgV;
-    [self calculateStartXYMargin:1];
+    [self calculateStartXYMargin:firstModel.ratio];
     
     if (!self.isRound) {
         CGRect ff = CGRectMake(0, kTopHeight, DL_SCREEN_WIDTH, CGRectGetMinY(self.itemScrollView.frame)-kTopHeight);
