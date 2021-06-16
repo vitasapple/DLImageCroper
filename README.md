@@ -2,6 +2,8 @@
 
 [中文介绍](https://github.com/vitasapple/DLImageCroper/blob/main/chinese.md)
 
+[blog address](https://juejin.cn/post/6974245323338153998/)
+
 DLImageCroper provides a simple solution for capturing the current image, with five built-in aspect ratios by default
 
 > @"1:1",@"3:4",@"origin",@"3:2",@"16:9"
