@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIImage (DLExtension)
 - (UIImage *)normalizedImage;
++(UIImage*)view2Image:(UIView*)v;
++ (UIImage *)imageWithClipImage:(UIImage *)image;
 @end
 
 NS_ASSUME_NONNULL_END

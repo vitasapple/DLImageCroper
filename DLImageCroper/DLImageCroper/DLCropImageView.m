@@ -31,9 +31,13 @@
 - (void)setRatioArr:(NSArray<DLImageItemRatioModel *> *)ratioArr{
     _ratioArr = ratioArr;
 }
+- (void)setIsRound:(BOOL)isRound{
+    _isRound = isRound;
+}
 -(void)sendChoseImage:(UIImage * )image{
     DLImageCroper * crop = [[DLImageCroper alloc]initWithFrame:CGRectMake(0, 0, DL_SCREEN_WIDTH, DL_SCREEN_HEIGHT) img:image];
     crop.ratioArr = self.ratioArr;
+    crop.isRound = self.isRound;
     crop.getCropImgBlock = ^(UIImage * _Nonnull cropImg, CGRect r) {
         UIImageView * tmpView = [[UIImageView alloc]initWithFrame:r];
         tmpView.image = cropImg;

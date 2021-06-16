@@ -10,6 +10,7 @@
 #import "DLImageCroperHeader.h"
 #import "DLImageItemRatioModel.h"
 #define barHeight 50
+#define itemScrollViewMinY DL_SCREEN_HEIGHT - KTabbarSafeBottomMargin - barHeight
 
 @interface DLImageCroper()<UIScrollViewDelegate>
 @property(nonatomic,retain)UIImageView * contentImgV;
@@ -42,6 +43,7 @@
     }
     [self createUI:self.currentImg];
 }
+#pragma mark setup methods
 -(void)setupRationArr{
     NSArray * nameArr = @[@"1:1",@"3:4",@"原始比例",@"3:2",@"16:9"];
     NSArray * valArr = @[@1,@0.75, @0,@1.5, @1.778];
@@ -57,6 +59,10 @@
 - (void)setRatioArr:(NSArray<DLImageItemRatioModel *> *)ratioArr{
     _ratioArr = ratioArr;
 }
+- (void)setIsRound:(BOOL)isRound{
+    _isRound = isRound;
+}
+#pragma mark scrollView delegate
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
     
     return _contentImgV;
@@ -67,6 +73,7 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     self.offset = scrollView.contentOffset;
 }
+#pragma mark event methods
 -(void)closeBtnClick{
     [self removeFromSuperview];
 }
@@ -98,12 +105,16 @@
     CGFloat realRate = self.scale / rate;//再根据屏幕的缩放倍率换算成相对图片的真正的缩放倍率
     CGRect  imgRect = CGRectMake(fabs(self.offset.x)/realRate,fabs(self.offset.y - self.startYMargin)/realRate, CGRectGetWidth(self.currentRect)/realRate, CGRectGetHeight(self.currentRect)/realRate);
     CGImageRef imageRef = CGImageCreateWithImageInRect([self.contentImgV.image CGImage],imgRect );
-    UIImage* subImage = [UIImage imageWithCGImage: imageRef];
+    UIImage * finalImg = [UIImage imageWithCGImage: imageRef];
     CGImageRelease(imageRef);
+    
+    if (self.isRound) {
+        finalImg = [UIImage imageWithClipImage:finalImg];
+    }
     if (self.getCropImgBlock) {
         UIWindow * window=[[[UIApplication sharedApplication] delegate] window];
         CGRect rect=[self.bgScro convertRect:self.bgScro.bounds toView:window];
-        self.getCropImgBlock(subImage, rect);
+        self.getCropImgBlock(finalImg, rect);
     }
     [self closeBtnClick];
 }
@@ -130,38 +141,41 @@
     [certainBtn addTarget:self action:@selector(certainBtnClick) forControlEvents:UIControlEventTouchUpInside];
     certainBtn.frame = CGRectMake(DL_SCREEN_WIDTH -45, kStatusBarHeight, 45, 45);
     [topView addSubview:certainBtn];
-    self.itemScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, DL_SCREEN_HEIGHT - KTabbarSafeBottomMargin - barHeight, DL_SCREEN_WIDTH, KTabbarSafeBottomMargin + barHeight)];
-    self.itemScrollView.backgroundColor = [UIColor whiteColor];
-    [self addSubview:self.itemScrollView];
-    
-    NSMutableArray * widArr = [NSMutableArray new];
-    CGFloat btnw = DL_SCREEN_WIDTH/self.ratioArr.count;
-    for (DLImageItemRatioModel * mo  in self.ratioArr) {
-        CGFloat nameWid = [mo.name sizeWithFont:[UIFont systemFontOfSize:AUTO(15)] maxSize:CGSizeMake(DL_SCREEN_WIDTH, 20)].width;
-        if (nameWid > btnw) {
-            [widArr addObject:@(nameWid)];
-        }else{
-            [widArr addObject:@(btnw)];
+    if (!self.isRound) {
+        self.itemScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, itemScrollViewMinY, DL_SCREEN_WIDTH, KTabbarSafeBottomMargin + barHeight)];
+        self.itemScrollView.backgroundColor = [UIColor whiteColor];
+        [self addSubview:self.itemScrollView];
+        
+        NSMutableArray * widArr = [NSMutableArray new];
+        CGFloat btnw = DL_SCREEN_WIDTH/self.ratioArr.count;
+        for (DLImageItemRatioModel * mo  in self.ratioArr) {
+            CGFloat nameWid = [mo.name sizeWithFont:[UIFont systemFontOfSize:AUTO(15)] maxSize:CGSizeMake(DL_SCREEN_WIDTH, 20)].width;
+            if (nameWid > btnw) {
+                [widArr addObject:@(nameWid)];
+            }else{
+                [widArr addObject:@(btnw)];
+            }
         }
+        UIButton * lastBtn = nil;
+        for (int i =0; i<self.ratioArr.count; i++) {
+            DLImageItemRatioModel * mo = self.ratioArr[i];
+            CGFloat wid = floor([widArr[i] doubleValue]);
+            UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
+            [btn setTitle:mo.name forState:UIControlStateNormal];
+            [btn addTarget:self action:@selector(choseRateClick:) forControlEvents:UIControlEventTouchUpInside];
+            btn.titleLabel.font = [UIFont systemFontOfSize:AUTO(15)];
+            [btn setTitleColor:TextColor forState:UIControlStateNormal];
+            btn.tag = 10 + i;
+            btn.frame = CGRectMake( CGRectGetMaxX(lastBtn.frame) , 0, wid, barHeight);
+            
+            [self.itemScrollView addSubview:btn];
+            lastBtn = btn;
+        }
+        self.itemScrollView.contentSize = CGSizeMake(CGRectGetMaxX(lastBtn.frame), CGRectGetHeight(self.itemScrollView.frame));
     }
-    UIButton * lastBtn = nil;
-    for (int i =0; i<self.ratioArr.count; i++) {
-        DLImageItemRatioModel * mo = self.ratioArr[i];
-        CGFloat wid = floor([widArr[i] doubleValue]);
-        UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [btn setTitle:mo.name forState:UIControlStateNormal];
-        [btn addTarget:self action:@selector(choseRateClick:) forControlEvents:UIControlEventTouchUpInside];
-        btn.titleLabel.font = [UIFont systemFontOfSize:AUTO(15)];
-        [btn setTitleColor:TextColor forState:UIControlStateNormal];
-        btn.tag = 10 + i;
-        btn.frame = CGRectMake( CGRectGetMaxX(lastBtn.frame) , 0, wid, barHeight);
-        
-        [self.itemScrollView addSubview:btn];
-        lastBtn = btn;
-    }
-    self.itemScrollView.contentSize = CGSizeMake(CGRectGetMaxX(lastBtn.frame), CGRectGetHeight(self.itemScrollView.frame));
-        
-    CGRect odd = CGRectMake(0, kTopHeight/2.0 + (CGRectGetMinY(self.itemScrollView.frame) - DL_SCREEN_WIDTH )/2.0, DL_SCREEN_WIDTH, DL_SCREEN_WIDTH);
+    DLImageItemRatioModel * firstModel = self.ratioArr.firstObject;
+    CGFloat hei = DL_SCREEN_WIDTH / firstModel.ratio;
+    CGRect odd = CGRectMake(0, (itemScrollViewMinY - hei)/2.0 + kTopHeight, DL_SCREEN_WIDTH, hei);
     self.currentRect = odd;
     self.bgScro = [[ISVImageScrollView alloc]initWithFrame:odd];
     self.bgScro.maximumZoomScale = 4.0;
@@ -173,16 +187,21 @@
     self.bgScro.imageView = _contentImgV;
     [self calculateStartXYMargin:1];
     
-    CGRect ff = CGRectMake(0, kTopHeight, DL_SCREEN_WIDTH, CGRectGetMinY(self.itemScrollView.frame)-kTopHeight);
-    UIBezierPath * path = [UIBezierPath bezierPathWithRect:ff];
-    UIBezierPath * path2 = [UIBezierPath bezierPathWithRect:odd];
-    [path appendPath:path2];
-    
-    self.shelterLayer = [CAShapeLayer new];
-    self.shelterLayer.path=path.CGPath;
-    self.shelterLayer.fillColor = [UIColor colorWithWhite:0 alpha:0.8].CGColor;
-    self.shelterLayer.fillRule = kCAFillRuleEvenOdd;
-    [self.layer addSublayer:self.shelterLayer];
+    if (!self.isRound) {
+        CGRect ff = CGRectMake(0, kTopHeight, DL_SCREEN_WIDTH, CGRectGetMinY(self.itemScrollView.frame)-kTopHeight);
+        UIBezierPath * path = [UIBezierPath bezierPathWithRect:ff];
+        UIBezierPath * path2 = [UIBezierPath bezierPathWithRect:odd];
+        [path appendPath:path2];
+        
+        self.shelterLayer = [CAShapeLayer new];
+        self.shelterLayer.path=path.CGPath;
+        self.shelterLayer.fillColor = [UIColor colorWithWhite:0 alpha:0.8].CGColor;
+        self.shelterLayer.fillRule = kCAFillRuleEvenOdd;
+        [self.layer addSublayer:self.shelterLayer];
+    }else{
+        self.bgScro.layer.cornerRadius = DL_SCREEN_WIDTH/2.0;
+        self.bgScro.layer.masksToBounds = YES;
+    }
 }
 -(void)calculateStartXYMargin:(CGFloat)xyRatio{
     if (self.currentImg.size.width > self.currentImg.size.height) {
