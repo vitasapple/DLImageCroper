@@ -175,7 +175,12 @@
     }
     DLImageItemRatioModel * firstModel = self.ratioArr.firstObject;
     CGFloat hei = DL_SCREEN_WIDTH / firstModel.ratio;
-    CGRect odd = CGRectMake(0, (itemScrollViewMinY - hei)/2.0 + kTopHeight, DL_SCREEN_WIDTH, hei);
+    CGRect odd = CGRectZero;
+    if (self.isRound) {
+        odd = CGRectMake(0, (itemScrollViewMinY - DL_SCREEN_WIDTH)/2.0 + kTopHeight, DL_SCREEN_WIDTH, DL_SCREEN_WIDTH);
+    }else{
+        odd = CGRectMake(0, (itemScrollViewMinY - hei)/2.0 + kTopHeight, DL_SCREEN_WIDTH, hei);
+    }
     self.currentRect = odd;
     self.bgScro = [[ISVImageScrollView alloc]initWithFrame:odd];
     self.bgScro.maximumZoomScale = 4.0;
